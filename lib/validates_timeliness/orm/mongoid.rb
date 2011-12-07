@@ -30,7 +30,13 @@ module ValidatesTimeliness
           }[fields[attr_name.to_s].type] || :datetime
         end
       end
-
+      
+      module InstanceMethods
+        def reload
+          _clear_timeliness_cache
+          super
+        end
+      end
     end
   end
 end
@@ -38,10 +44,4 @@ end
 module Mongoid::Document
   include ValidatesTimeliness::AttributeMethods
   include ValidatesTimeliness::ORM::Mongoid
-
-  def reload_with_timeliness
-    _clear_timeliness_cache
-    reload_without_timeliness
-  end
-  alias_method_chain :reload, :timeliness
 end
